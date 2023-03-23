@@ -20,6 +20,13 @@ class IngredientsSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор рецептов"""
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+    )
+
+    tags = serializers.StringRelatedField(many=True, read_only=True)
+    ingredients = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Recipe

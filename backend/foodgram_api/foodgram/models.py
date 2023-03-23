@@ -18,6 +18,9 @@ class Tag(models.Model):
     )
     slug = models.SlugField(unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Ingredients(models.Model):
     """Модель ингредиента"""
@@ -39,6 +42,9 @@ class Ingredients(models.Model):
         max_length=256,
         choices=MESURES
     )
+
+    def __str__(self):
+        return self.name
 
 
 class Recipe(models.Model):
@@ -74,6 +80,9 @@ class Recipe(models.Model):
         ],
     )
 
+    def __str__(self):
+        return self.name
+
 
 class RecipeTag(models.Model):
     """Промежуточная модель между рецептом и тегом"""
@@ -90,6 +99,9 @@ class RecipeTag(models.Model):
         verbose_name='Рецепт'
     )
 
+    def __str__(self):
+        return f"{self.tag} тег рецепта {self.recipe}"
+
 
 class RecipeIngredients(models.Model):
     """Промежуточная модель между рецептом и ингредиентом"""
@@ -105,3 +117,48 @@ class RecipeIngredients(models.Model):
         related_name='recipe',
         verbose_name='Рецепт'
     )
+
+    def __str__(self):
+        return f"{self.ingredient} ингредиент в рецепте {self.recipe}"
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe,  on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} добавил в избранное {self.recipe}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "recipe"],
+                name="unique_follow"
+            )
+        ]
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="follower",
+        verbose_name="Подписчик",
+    )
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="following",
+        verbose_name="Блогер"
+    )
+
+    def __str__(self):
+        return f"{self.user} подписан на {self.following}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "following"],
+                name="unique_follow"
+            )
+        ]
