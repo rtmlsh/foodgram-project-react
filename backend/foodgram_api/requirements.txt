@@ -1,0 +1,16 @@
+asgiref
+django
+django-filter
+djangorestframework
+djangorestframework-simplejwt
+drf-yasg
+gunicorn
+psycopg2-binary
+PyJWT
+pytest
+pytest-django
+pytest-pythonpath
+pytz
+python-dotenv
+sqlparse
+requests
