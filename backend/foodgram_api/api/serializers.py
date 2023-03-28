@@ -24,9 +24,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username',
     )
-
-    tags = serializers.StringRelatedField(many=True, read_only=True)
-    ingredients = serializers.StringRelatedField(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    ingredients = IngredientsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Recipe
