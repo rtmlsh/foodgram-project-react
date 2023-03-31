@@ -43,17 +43,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         return ShoppingCart.objects.filter(user=user.is_authenticated, recipe=recipe).exists()
 
 
-class RecipeTagSerializer(serializers.ModelSerializer):
-    """Сериализатор тегов у рецептов"""
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор данных к юзерам."""
 
     class Meta:
-        model = RecipeTag
-        fields = ('tag', 'recipe')
-
-
-class FavoriteSerializer(serializers.ModelSerializer):
-    """Сериализатор модели добавления в избранное"""
-
-    class Meta:
-        model = Favorite
-        fields = ('user', 'recipe')
+        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role',)
+        model = User
