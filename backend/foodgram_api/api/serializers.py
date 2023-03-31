@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from foodgram.models import Tag, Ingredients, Recipe, RecipeTag
+from foodgram.models import Tag, Ingredients, Recipe, RecipeTag, Favorite, User
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -32,6 +32,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = ('author', 'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time')
 
 
+
+
 class RecipeTagSerializer(serializers.ModelSerializer):
     """Сериализатор тегов у рецептов"""
 
@@ -39,3 +41,10 @@ class RecipeTagSerializer(serializers.ModelSerializer):
         model = RecipeTag
         fields = ('tag', 'recipe')
 
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор модели добавления в избранное"""
+
+    class Meta:
+        model = Favorite
+        fields = ('user', 'recipe')

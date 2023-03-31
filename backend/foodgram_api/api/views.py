@@ -1,7 +1,9 @@
-from rest_framework import viewsets
-from foodgram.models import Tag, Ingredients, Recipe
+from rest_framework import viewsets, mixins, status, permissions
+from foodgram.models import Tag, Ingredients, Recipe, Favorite, User
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from .serializers import TagSerializer, IngredientsSerializer, RecipeSerializer
-from rest_framework import filters
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -17,3 +19,19 @@ class IngredientsViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
+    @action(methods=['POST', 'DELETE'], detail=True)
+    def favorite(self, request, pk):
+        favorite_recipe = Favorite.objects.filter(user=request.user.pk, recipe=pk)
+        if favorite_recipe.exists():
+            if request.method == 'DELETE':
+                favorite_recipe.delete()
+                return Response({'alert': 'Рецепт убран из избранного'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'errors': 'Рецепт уже добавлен в избранное'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.method == 'POST':
+            recipe = Recipe.objects.get(id=pk)
+            Favorite.objects.get_or_create(user=request.user, recipe=recipe)
+            return Response({'alert': 'Рецепт добавлен в избранное'}, status=status.HTTP_201_CREATED)
+
+
