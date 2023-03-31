@@ -1,7 +1,8 @@
-from rest_framework import viewsets, mixins, status, permissions
+from rest_framework import viewsets, status
 from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart, User
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from .pagination import RecipesPagination
 
 from .serializers import TagSerializer, IngredientsSerializer, RecipeSerializer
 
@@ -19,6 +20,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    pagination_class = RecipesPagination
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
