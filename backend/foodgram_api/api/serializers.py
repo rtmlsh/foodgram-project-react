@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from foodgram.models import Tag, Ingredients, Recipe, RecipeTag, Favorite, User
+from foodgram.models import Tag, Ingredients, Recipe, RecipeTag, Favorite, User, ShoppingCart
+from rest_framework.fields import SerializerMethodField
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -26,12 +27,20 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientsSerializer(many=True, read_only=True)
+    is_favorited = SerializerMethodField()
+    is_in_shopping_cart = SerializerMethodField()
 
     class Meta:
         model = Recipe
-        fields = ('author', 'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time')
+        fields = ('author', 'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time', 'is_favorited', 'is_in_shopping_cart')
 
+    def get_is_favorited(self, recipe):
+        user = self.context.get('request').user
+        return Favorite.objects.filter(user=user.is_authenticated, recipe=recipe).exists()
 
+    def get_is_in_shopping_cart(self, recipe):
+        user = self.context.get('request').user
+        return ShoppingCart.objects.filter(user=user.is_authenticated, recipe=recipe).exists()
 
 
 class RecipeTagSerializer(serializers.ModelSerializer):

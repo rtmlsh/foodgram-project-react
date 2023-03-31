@@ -123,6 +123,7 @@ class RecipeIngredients(models.Model):
 
 
 class Favorite(models.Model):
+    """Модель для работы с избранными рецептами"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='favorite_recipes')
 
@@ -138,7 +139,25 @@ class Favorite(models.Model):
         ]
 
 
+class ShoppingCart(models.Model):
+    """Модель для работы со списком покупок"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} добавил {self.recipe} в список покупок"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "recipe"],
+                name="unique_shopping_cart"
+            )
+        ]
+
+
 class Follow(models.Model):
+    """Модель для работы подписками"""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
