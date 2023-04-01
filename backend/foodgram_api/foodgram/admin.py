@@ -19,6 +19,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     count_favorites.short_description = 'Добавлено в избранное'
 
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_filter = ('username', 'email')
