@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
-from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart, User
+from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart
+from users.models import User
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .pagination import RecipesPagination

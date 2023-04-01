@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from foodgram.models import Tag, Ingredients, Recipe, RecipeTag, Favorite, User, ShoppingCart
+from foodgram.models import Tag, Ingredients, Recipe, RecipeTag, Favorite, ShoppingCart
+from users.models import User
 from rest_framework.fields import SerializerMethodField
 
 
