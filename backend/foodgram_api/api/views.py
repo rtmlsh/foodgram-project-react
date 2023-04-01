@@ -1,6 +1,6 @@
+from django.db.models import Sum
 from rest_framework import viewsets, status
-from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart
-from users.models import User
+from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart, RecipeIngredients
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .pagination import RecipesPagination
@@ -50,3 +50,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe = Recipe.objects.get(id=pk)
             ShoppingCart.objects.get_or_create(user=request.user, recipe=recipe)
             return Response({'alert': 'Рецепт добавлен в список покупок'}, status=status.HTTP_201_CREATED)
+
+    # def download_shopping_cart(self, request):
+    #     ingredients = RecipeIngredients.objects.filter(recipes__shopping_cart__user=request.user).values(
+    #         'ingredient__name',
+    #         'ingredient__measurement_unit'
+    #     ).annotate(amount=Sum('amount'))
+
