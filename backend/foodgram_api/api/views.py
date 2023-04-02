@@ -1,9 +1,10 @@
-from django.db.models import Sum
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart, RecipeIngredients
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .pagination import RecipesPagination
+from .filters import RecipeFilter
 
 from .serializers import TagSerializer, IngredientsSerializer, RecipeSerializer
 
@@ -22,6 +23,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = RecipesPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
