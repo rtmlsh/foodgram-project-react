@@ -140,8 +140,8 @@ class Favorite(models.Model):
 
 class ShoppingCart(models.Model):
     """Модель для работы со списком покупок"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shopping_cart')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipes_in_shopping_cart')
 
     def __str__(self):
         return f"{self.user} добавил {self.recipe} в список покупок"
