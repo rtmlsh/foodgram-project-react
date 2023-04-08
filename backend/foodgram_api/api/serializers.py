@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from foodgram.models import Tag, Ingredients, Recipe, RecipeTag, Favorite, ShoppingCart, RecipeIngredients
 from rest_framework.exceptions import ValidationError
@@ -48,18 +47,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return ShoppingCart.objects.filter(user=user.is_authenticated, recipe=recipe).exists()
 
 
-# class RecipeIngredientsSerializer(serializers.Serializer):
-#     """Сериализатор для вывода количества ингредиентов."""
-#
-#     class Meta:
-#         model = RecipeIngredients
-#         fields = ('ingredient', 'recipe', 'amount')
-#
-#     def get_ingredients(self, obj):
-#         queryset = RecipeIngredients.objects.filter(recipe=obj)
-#         return RecipeIngredientsSerialiszr(queryset, many=True).data
-
-
 class AddIngredientsSerializer(serializers.ModelSerializer):
     """Сериализатор добавления ингредиентов"""
 
@@ -94,9 +81,6 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
         if not value:
             raise ValidationError(
                 {'error': 'Для создания рецепта нужно выбрать ингредиенты'})
-
-        for ingredient in value:
-            get_object_or_404(Ingredients, name=ingredient['id'])
 
     def add_tags(self, recipe, tags):
         for tag in tags:

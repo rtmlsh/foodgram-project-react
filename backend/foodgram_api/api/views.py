@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart, RecipeIngredients
@@ -59,10 +60,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ShoppingCart.objects.get_or_create(user=request.user, recipe=recipe)
             return Response({'alert': 'Рецепт добавлен в список покупок'}, status=status.HTTP_201_CREATED)
 
-    # @action(methods=['GET'], detail=True)
-    # def download_shopping_cart(self, request):
-    #     ingredients = RecipeIngredients.objects.filter(recipes__shopping_cart__user=request.user).values(
-    #         'ingredient__name',
-    #         'ingredient__measurement_unit'
-    #     ).annotate(amount=Sum('amount'))
+    @action(methods=['GET'], detail=False)
+    def download_shopping_cart(self, request):
+        shopping_cart = ShoppingCart.objects.filter(user=request.user)
+        ingredients = RecipeIngredients.objects.filter(recipe__shopping_cart__user=request.user)
+
+
+        # ingredients = RecipeIngredients.objects.filter(recipe__shopping_cart__user=request.user)
+        # .values(
+        #     'ingredient__name',
+        #     'ingredient__measurement_unit'
+        # ).annotate(amount=Sum('amount'))
+        print(shopping_cart)
+        print(ingredients)
+        return Response({'1'})
+
+
+
 
