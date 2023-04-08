@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .pagination import RecipesPagination
 from .filters import RecipeFilter
 
-from .serializers import TagSerializer, IngredientsSerializer, RecipeSerializer
+from .serializers import TagSerializer, IngredientsSerializer, RecipeSerializer, CreateUpdateRecipeSerializer
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -20,11 +20,16 @@ class IngredientsViewSet(viewsets.ModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.all().order_by('id')
     serializer_class = RecipeSerializer
     pagination_class = RecipesPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+
+    def get_serializer_class(self):
+        if self.action is 'create' or 'partial_update':
+            return CreateUpdateRecipeSerializer
+        return RecipeSerializer
 
     @action(methods=['POST', 'DELETE'], detail=True)
     def favorite(self, request, pk):
@@ -54,6 +59,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ShoppingCart.objects.get_or_create(user=request.user, recipe=recipe)
             return Response({'alert': 'Рецепт добавлен в список покупок'}, status=status.HTTP_201_CREATED)
 
+    # @action(methods=['GET'], detail=True)
     # def download_shopping_cart(self, request):
     #     ingredients = RecipeIngredients.objects.filter(recipes__shopping_cart__user=request.user).values(
     #         'ingredient__name',
