@@ -1,4 +1,5 @@
 from django.db.models import Sum
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart, RecipeIngredients
@@ -62,19 +63,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['GET'], detail=False)
     def download_shopping_cart(self, request):
-        shopping_cart = ShoppingCart.objects.filter(user=request.user)
-        ingredients = RecipeIngredients.objects.filter(recipe__shopping_cart__user=request.user)
+        ingredients = RecipeIngredients.objects.filter(
+            recipe__recipes_in_shopping_cart__user=request.user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
 
+        shopping_cart = [f' {ingredient["ingredient__name"]} ({ingredient["ingredient__measurement_unit"]}) — {ingredient["amount"]}' for ingredient in ingredients]
 
-        # ingredients = RecipeIngredients.objects.filter(recipe__shopping_cart__user=request.user)
-        # .values(
-        #     'ingredient__name',
-        #     'ingredient__measurement_unit'
-        # ).annotate(amount=Sum('amount'))
-        print(shopping_cart)
-        print(ingredients)
-        return Response({'1'})
-
-
-
-
+        filename = 'shopping_cart.txt'
+        response = HttpResponse(shopping_cart, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
