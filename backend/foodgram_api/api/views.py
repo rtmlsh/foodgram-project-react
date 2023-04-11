@@ -5,7 +5,7 @@ from rest_framework import viewsets, status
 from foodgram.models import Tag, Ingredients, Recipe, Favorite, ShoppingCart, RecipeIngredients
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .pagination import RecipesPagination
+from .pagination import CustomPagination
 from .filters import RecipeFilter
 
 from .serializers import TagSerializer, IngredientsSerializer, RecipeSerializer, CreateUpdateRecipeSerializer
@@ -24,7 +24,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all().order_by('id')
     serializer_class = RecipeSerializer
-    pagination_class = RecipesPagination
+    pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
