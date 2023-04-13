@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from foodgram.models import (
@@ -46,7 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return CreateUpdateRecipeSerializer
         return RecipeSerializer
 
-    @action(methods=["POST", "DELETE"], detail=True)
+    @action(methods=["POST", "DELETE"], detail=True, permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
         favorite_recipe = Favorite.objects.filter(user=request.user.pk, recipe=pk)
         if favorite_recipe.exists():
@@ -68,7 +69,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 {"alert": "Рецепт добавлен в избранное"}, status=status.HTTP_201_CREATED
             )
 
-    @action(methods=["POST", "DELETE"], detail=True)
+    @action(methods=["POST", "DELETE"], detail=True, permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
         recipe = ShoppingCart.objects.filter(user=request.user.pk, recipe=pk)
         if recipe.exists():
@@ -91,7 +92,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED,
             )
 
-    @action(methods=["GET"], detail=False)
+    @action(methods=["GET"], detail=False, permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         ingredients = (
             RecipeIngredients.objects.filter(
