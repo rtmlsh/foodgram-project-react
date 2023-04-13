@@ -3,14 +3,16 @@ from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from .serializers import CustomUserSerializer
-from .models import User, Follow
-from .pagination import CustomPagination
 from rest_framework.response import Response
+
+from api.pagination import CustomPagination
+
+from .models import Follow, User
+from .serializers import CustomUserSerializer, FollowSerializer
 
 
 class CustomUserViewSet(UserViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('id')
     serializer_class = CustomUserSerializer
     pagination_class = CustomPagination
 
@@ -29,6 +31,9 @@ class CustomUserViewSet(UserViewSet):
             Follow.objects.get_or_create(user=request.user, following=author)
             return Response({'alert': 'Автор добавлен в подписки'}, status=status.HTTP_201_CREATED)
 
-    @action(methods=['POST', 'DELETE'], detail=True, permission_classes=[IsAuthenticated])
+    @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
-        pass
+        user = request.user
+        queryset = User.objects.filter(following__user=user)
+        serializer = FollowSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
