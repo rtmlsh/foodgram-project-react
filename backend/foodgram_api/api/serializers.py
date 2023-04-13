@@ -1,9 +1,11 @@
 from rest_framework import serializers
-from foodgram.models import Tag, Ingredients, Recipe, RecipeTag, Favorite, ShoppingCart, RecipeIngredients
 from rest_framework.exceptions import ValidationError
-from rest_framework.validators import UniqueValidator
-from users.models import User
 from rest_framework.fields import SerializerMethodField
+from rest_framework.validators import UniqueValidator
+
+from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
+                             RecipeTag, ShoppingCart, Tag)
+from users.models import User
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -11,7 +13,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ('id', 'name', 'color', 'slug')
+        fields = ("id", "name", "color", "slug")
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
@@ -19,7 +21,7 @@ class IngredientsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredients
-        fields = ('id', 'name', 'measurement_unit')
+        fields = ("id", "name", "measurement_unit")
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -27,7 +29,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         read_only=True,
-        slug_field='username',
+        slug_field="username",
     )
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientsSerializer(many=True, read_only=True)
@@ -36,15 +38,29 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('author', 'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time', 'is_favorited', 'is_in_shopping_cart')
+        fields = (
+            "author",
+            "ingredients",
+            "tags",
+            "image",
+            "name",
+            "text",
+            "cooking_time",
+            "is_favorited",
+            "is_in_shopping_cart",
+        )
 
     def get_is_favorited(self, recipe):
-        user = self.context.get('request').user
-        return Favorite.objects.filter(user=user.is_authenticated, recipe=recipe).exists()
+        user = self.context.get("request").user
+        return Favorite.objects.filter(
+            user=user.is_authenticated, recipe=recipe
+        ).exists()
 
     def get_is_in_shopping_cart(self, recipe):
-        user = self.context.get('request').user
-        return ShoppingCart.objects.filter(user=user.is_authenticated, recipe=recipe).exists()
+        user = self.context.get("request").user
+        return ShoppingCart.objects.filter(
+            user=user.is_authenticated, recipe=recipe
+        ).exists()
 
 
 class AddIngredientsSerializer(serializers.ModelSerializer):
@@ -52,12 +68,12 @@ class AddIngredientsSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredients.objects.all(),
-        validators=[UniqueValidator(queryset=Ingredients.objects.all())]
+        validators=[UniqueValidator(queryset=Ingredients.objects.all())],
     )
 
     class Meta:
         model = RecipeIngredients
-        fields = ('id', 'amount')
+        fields = ("id", "amount")
 
 
 class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
@@ -65,22 +81,21 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
 
     tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
     ingredients = AddIngredientsSerializer(many=True)
-    author = serializers.HiddenField(
-        default=serializers.CurrentUserDefault())
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Recipe
-        fields = ('author', 'ingredients', 'tags', 'name', 'text', 'cooking_time')
+        fields = ("author", "ingredients", "tags", "name", "text", "cooking_time")
 
     def validate_tags(self, value):
         if not value:
-            raise ValidationError(
-                {'error': 'Для создания рецепта нужно выбрать теги'})
+            raise ValidationError({"error": "Для создания рецепта нужно выбрать теги"})
 
     def validate_ingredients(self, value):
         if not value:
             raise ValidationError(
-                {'error': 'Для создания рецепта нужно выбрать ингредиенты'})
+                {"error": "Для создания рецепта нужно выбрать ингредиенты"}
+            )
 
     def add_tags(self, recipe, tags):
         for tag in tags:
@@ -92,27 +107,24 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
 
         for ingredient in ingredients:
             RecipeIngredients.objects.update_or_create(
-                recipe=recipe,
-                amount=ingredient['amount'],
-                ingredient=ingredient['id']
+                recipe=recipe, amount=ingredient["amount"], ingredient=ingredient["id"]
             )
         return recipe
 
     def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop("tags")
+        ingredients = validated_data.pop("ingredients")
 
         if Recipe.objects.filter(**validated_data).exists():
-            raise ValidationError(
-                {'error': 'Рецепт уже создан'})
+            raise ValidationError({"error": "Рецепт уже создан"})
 
         recipe = Recipe.objects.create(**validated_data)
         recipe = self.add_ingredients(ingredients, tags, recipe)
         return recipe
 
     def update(self, instance, validated_data):
-        ingredients = validated_data.pop('ingredients')
-        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop("ingredients")
+        tags = validated_data.pop("tags")
         instance.tags.clear()
         instance.ingredients.clear()
         self.add_ingredients(ingredients, tags, instance)
@@ -124,5 +136,12 @@ class UserSerializer(serializers.ModelSerializer):
     """Сериализатор данных юзера"""
 
     class Meta:
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role',)
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "bio",
+            "role",
+        )
         model = User

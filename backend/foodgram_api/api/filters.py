@@ -6,11 +6,11 @@ from foodgram.models import Recipe, Tag, User
 class RecipeFilter(rest_framework.FilterSet):
     tag = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
-        field_name='tags__slug',
-        to_field_name='slug',
+        field_name="tags__slug",
+        to_field_name="slug",
     )
-    is_favorited = BooleanFilter(method='get_favorite_recipe')
-    is_in_shopping_cart = BooleanFilter(method='get_shopping_cart')
+    is_favorited = BooleanFilter(method="get_favorite_recipe")
+    is_in_shopping_cart = BooleanFilter(method="get_shopping_cart")
 
     def get_favorite_recipe(self, queryset, name, value):
         if value:
@@ -22,5 +22,4 @@ class RecipeFilter(rest_framework.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ('tags', 'is_favorited')
-
+        fields = ("tags", "is_favorited")
