@@ -5,7 +5,9 @@ from rest_framework.validators import UniqueValidator
 
 from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
                              RecipeTag, ShoppingCart, Tag)
-from users.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
