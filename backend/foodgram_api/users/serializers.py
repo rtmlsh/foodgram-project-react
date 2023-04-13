@@ -9,10 +9,10 @@ class CustomUserSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed')
+        fields = ("email", "id", "username", "first_name", "last_name", "is_subscribed")
 
     def get_is_subscribed(self, following):
-        user = self.context.get('request').user
+        user = self.context.get("request").user
         return Follow.objects.filter(user=user, following=following).exists()
 
 
@@ -22,10 +22,19 @@ class FollowSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+        fields = (
+            "email",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "is_subscribed",
+            "recipes",
+            "recipes_count",
+        )
 
     def get_is_subscribed(self, following):
-        user = self.context.get('request').user
+        user = self.context.get("request").user
         return Follow.objects.filter(user=user, following=following).exists()
 
     def get_recipes_count(self, obj):

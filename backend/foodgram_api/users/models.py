@@ -4,11 +4,22 @@ from django.db import models
 
 class User(AbstractUser):
     """Модель, описывающая пользователя"""
-    username = models.CharField(verbose_name='Имя пользователя', max_length=256, unique=True)
-    email = models.EmailField(verbose_name='Электронная почта', max_length=256, unique=True)
-    first_name = models.CharField(verbose_name='Имя', max_length=256, unique=True, blank=True, null=True)
-    last_name = models.CharField(verbose_name='Фамилия', max_length=256, unique=True, blank=True, null=True)
-    is_subscribed = models.BooleanField(verbose_name='Подписка', default=False, blank=True, null=True)
+
+    username = models.CharField(
+        verbose_name="Имя пользователя", max_length=256, unique=True
+    )
+    email = models.EmailField(
+        verbose_name="Электронная почта", max_length=256, unique=True
+    )
+    first_name = models.CharField(
+        verbose_name="Имя", max_length=256, unique=True, blank=True, null=True
+    )
+    last_name = models.CharField(
+        verbose_name="Фамилия", max_length=256, unique=True, blank=True, null=True
+    )
+    is_subscribed = models.BooleanField(
+        verbose_name="Подписка", default=False, blank=True, null=True
+    )
 
     def __str__(self):
         return self.username
@@ -16,6 +27,7 @@ class User(AbstractUser):
 
 class Follow(models.Model):
     """Модель для работы c подписками"""
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -23,10 +35,7 @@ class Follow(models.Model):
         verbose_name="Подписчик",
     )
     following = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="following",
-        verbose_name="Блогер"
+        User, on_delete=models.CASCADE, related_name="following", verbose_name="Блогер"
     )
 
     def __str__(self):
@@ -34,8 +43,5 @@ class Follow(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["user", "following"],
-                name="unique_follow"
-            )
+            models.UniqueConstraint(fields=["user", "following"], name="unique_follow")
         ]
