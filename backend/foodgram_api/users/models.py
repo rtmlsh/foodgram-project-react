@@ -48,6 +48,10 @@ class Follow(models.Model):
     class Meta:
         constraints = (
             models.UniqueConstraint(fields=("user", "following"), name="unique_follow"),
+            models.CheckConstraint(
+                name="check unique_follow",
+                check=~models.Q(user=models.F("following")),
+            ),
         )
         verbose_name = "Подписки"
         verbose_name_plural = verbose_name
