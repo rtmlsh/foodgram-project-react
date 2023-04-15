@@ -6,23 +6,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from foodgram.models import (
-    Favorite,
-    Ingredients,
-    Recipe,
-    RecipeIngredients,
-    ShoppingCart,
-    Tag,
-)
+from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
+                             ShoppingCart, Tag)
 
 from .filters import RecipeFilter
 from .pagination import CustomPagination
-from .serializers import (
-    CreateUpdateRecipeSerializer,
-    IngredientsSerializer,
-    RecipeSerializer,
-    TagSerializer,
-)
+from .serializers import (CreateUpdateRecipeSerializer, IngredientsSerializer,
+                          RecipeSerializer, TagSerializer)
 
 
 class TagViewSet(viewsets.ModelViewSet):

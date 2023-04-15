@@ -3,8 +3,15 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.validators import UniqueValidator
 
-from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
-                             RecipeTag, ShoppingCart, Tag)
+from foodgram.models import (
+    Favorite,
+    Ingredients,
+    Recipe,
+    RecipeIngredients,
+    RecipeTag,
+    ShoppingCart,
+    Tag,
+)
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
