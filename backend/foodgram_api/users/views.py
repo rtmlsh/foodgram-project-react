@@ -16,30 +16,37 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
     pagination_class = CustomPagination
 
-    @action(
-        methods=["POST", "DELETE"], detail=True, permission_classes=[IsAuthenticated]
-    )
-    def subscribe(self, request, **kwargs):
-        author = get_object_or_404(User, id=self.kwargs.get("id"))
-        subscribe = Follow.objects.filter(user=request.user, following=author)
-
+    @staticmethod
+    def add_subscriber(request, author, subscribe):
         if subscribe.exists():
-            if request.method == "DELETE":
-                subscribe.delete()
-                return Response(
-                    {"alert": "Автор убран из подписок"},
-                    status=status.HTTP_204_NO_CONTENT,
-                )
             return Response(
                 {"errors": "Автор уже добавлен в подписки"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        Follow.objects.get_or_create(user=request.user, following=author)
+        return Response(
+            {"alert": "Автор добавлен в подписки"}, status=status.HTTP_201_CREATED
+        )
 
-        if request.method == "POST":
-            Follow.objects.get_or_create(user=request.user, following=author)
+    @staticmethod
+    def delete_subscriber(subscribe):
+        if subscribe.exists():
+            subscribe.delete()
             return Response(
-                {"alert": "Автор добавлен в подписки"}, status=status.HTTP_201_CREATED
+                {"alert": "Автор убран из подписок"},
+                status=status.HTTP_204_NO_CONTENT,
             )
+
+    @action(
+        methods=("POST", "DELETE"), detail=True, permission_classes=(IsAuthenticated,),
+    )
+    def subscribe(self, request, **kwargs):
+        author = get_object_or_404(User, id=self.kwargs.get("id"))
+        subscribe = Follow.objects.filter(user=request.user, following=author)
+        if request.method == "POST":
+            return self.add_subscriber(request, author, subscribe)
+        else:
+            return self.delete_subscriber(subscribe)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):

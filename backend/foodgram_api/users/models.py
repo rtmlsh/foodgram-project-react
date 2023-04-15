@@ -24,6 +24,10 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+
 
 class Follow(models.Model):
     """Модель для работы c подписками"""
@@ -42,6 +46,10 @@ class Follow(models.Model):
         return f"{self.user} подписан на {self.following}"
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["user", "following"], name="unique_follow")
-        ]
+        constraints = (
+            models.UniqueConstraint(fields=("user", "following"), name="unique_follow"),
+        )
+
+    class Meta:
+        verbose_name = "Подписки"
+        verbose_name_plural = verbose_name
