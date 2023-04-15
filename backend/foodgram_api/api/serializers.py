@@ -70,7 +70,7 @@ class AddIngredientsSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredients.objects.all(),
-        validators=[UniqueValidator(queryset=Ingredients.objects.all())],
+        validators=(UniqueValidator(queryset=Ingredients.objects.all()),),
     )
 
     class Meta:

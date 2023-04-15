@@ -47,59 +47,77 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return CreateUpdateRecipeSerializer
         return RecipeSerializer
 
-    @action(methods=["POST", "DELETE"], detail=True, permission_classes=[IsAuthenticated])
-    def favorite(self, request, pk):
-        favorite_recipe = Favorite.objects.filter(user=request.user.pk, recipe=pk)
-        if favorite_recipe.exists():
-            if request.method == "DELETE":
-                favorite_recipe.delete()
-                return Response(
-                    {"alert": "Рецепт убран из избранного"},
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+    @staticmethod
+    def add_favorite(request, pk):
+        if Favorite.objects.filter(user=request.user.pk, recipe=pk).exists():
             return Response(
                 {"errors": "Рецепт уже добавлен в избранное"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if request.method == "POST":
-            recipe = Recipe.objects.get(id=pk)
-            Favorite.objects.get_or_create(user=request.user, recipe=recipe)
+        recipe = Recipe.objects.get(id=pk)
+        Favorite.objects.get_or_create(user=request.user, recipe=recipe)
+        return Response(
+            {"alert": "Рецепт добавлен в избранное"}, status=status.HTTP_201_CREATED
+        )
+
+    @staticmethod
+    def delete_favorite(request, pk):
+        favorite_recipe = Favorite.objects.filter(user=request.user.pk, recipe=pk)
+        if favorite_recipe.exists():
+            favorite_recipe.delete()
             return Response(
-                {"alert": "Рецепт добавлен в избранное"}, status=status.HTTP_201_CREATED
+                {"alert": "Рецепт убран из избранного"},
+                status=status.HTTP_204_NO_CONTENT,
             )
 
-    @action(methods=["POST", "DELETE"], detail=True, permission_classes=[IsAuthenticated])
-    def shopping_cart(self, request, pk):
-        recipe = ShoppingCart.objects.filter(user=request.user.pk, recipe=pk)
-        if recipe.exists():
-            if request.method == "DELETE":
-                recipe.delete()
-                return Response(
-                    {"alert": "Рецепт убран из списка покупок"},
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+    @staticmethod
+    def add_in_shopping_cart(request, pk):
+        if ShoppingCart.objects.filter(user=request.user.pk, recipe=pk).exists():
             return Response(
                 {"errors": "Рецепт уже добавлен в список покупок"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if request.method == "POST":
-            recipe = Recipe.objects.get(id=pk)
-            ShoppingCart.objects.get_or_create(user=request.user, recipe=recipe)
+        recipe = Recipe.objects.get(id=pk)
+        ShoppingCart.objects.get_or_create(user=request.user, recipe=recipe)
+        return Response(
+            {"alert": "Рецепт добавлен в список покупок"},
+            status=status.HTTP_201_CREATED,
+        )
+
+    @staticmethod
+    def delete_from_shopping_cart(request, pk):
+        recipe = ShoppingCart.objects.filter(user=request.user.pk, recipe=pk)
+        if recipe.exists():
+            recipe.delete()
             return Response(
-                {"alert": "Рецепт добавлен в список покупок"},
-                status=status.HTTP_201_CREATED,
+                {"alert": "Рецепт убран из списка покупок"},
+                status=status.HTTP_204_NO_CONTENT,
             )
 
-    @action(methods=["GET"], detail=False, permission_classes=[IsAuthenticated])
+    @action(methods=("POST", "DELETE"), detail=True, permission_classes=(IsAuthenticated,))
+    def favorite(self, request, pk):
+        if request.method == "POST":
+            return self.add_favorite(request, pk)
+        else:
+            return self.delete_favorite(request, pk)
+
+    @action(methods=("POST", "DELETE"), detail=True, permission_classes=(IsAuthenticated,))
+    def shopping_cart(self, request, pk):
+        if request.method == "POST":
+            return self.add_in_shopping_cart(request, pk)
+        else:
+            return self.delete_from_shopping_cart(request, pk)
+
+    @action(methods=("GET",), detail=False, permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request):
         ingredients = (
             RecipeIngredients.objects.filter(
                 recipe__recipes_in_shopping_cart__user=request.user
             )
-            .values("ingredient__name", "ingredient__measurement_unit")
-            .annotate(amount=Sum("amount"))
+                .values("ingredient__name", "ingredient__measurement_unit")
+                .annotate(amount=Sum("amount"))
         )
 
         shopping_cart = [
