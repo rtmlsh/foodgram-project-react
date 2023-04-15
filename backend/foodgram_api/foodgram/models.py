@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -22,14 +21,19 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Тег"
+        verbose_name_plural = "Теги"
+
 
 class Ingredients(models.Model):
     """Модель ингредиента"""
 
     MESURES = (
-        ("kilo", "kg"),
-        ("milliliter", "ml"),
-        ("gram", "gr"),
+        ("килограмм", "кг"),
+        ("миллилитр", "мл"),
+        ("грамм", "г"),
+        ("столовая ложка", "ст. л."),
     )
 
     name = models.CharField(
@@ -42,6 +46,10 @@ class Ingredients(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Ингредиент"
+        verbose_name_plural = "Ингредиенты"
 
 
 class Recipe(models.Model):
@@ -72,13 +80,17 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name="Время приготовления в минутах",
         default=0,
-        validators=[
+        validators=(
             MinValueValidator(1, "Время не может быть меньше одной минуты"),
-        ],
+        ),
     )
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Рецепт"
+        verbose_name_plural = "Рецепты"
 
 
 class RecipeTag(models.Model):
@@ -93,6 +105,10 @@ class RecipeTag(models.Model):
 
     def __str__(self):
         return f"{self.tag} тег рецепта {self.recipe}"
+
+    class Meta:
+        verbose_name = "Рецепт и тег"
+        verbose_name_plural = "Рецепты и теги"
 
 
 class RecipeIngredients(models.Model):
@@ -114,6 +130,10 @@ class RecipeIngredients(models.Model):
     def __str__(self):
         return f"Ингредиент {self.ingredient} в рецепте {self.recipe}"
 
+    class Meta:
+        verbose_name = "Рецепт и ингредиент"
+        verbose_name_plural = "Рецепты и ингредиенты"
+
 
 class Favorite(models.Model):
     """Модель для работы с избранными рецептами"""
@@ -127,9 +147,13 @@ class Favorite(models.Model):
         return f"{self.user} добавил в избранное {self.recipe}"
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["user", "recipe"], name="unique_favorite")
-        ]
+        constraints = (
+            models.UniqueConstraint(fields=("user", "recipe"), name="unique_favorite"),
+        )
+
+    class Meta:
+        verbose_name = "Избранное"
+        verbose_name_plural = verbose_name
 
 
 class ShoppingCart(models.Model):
@@ -146,8 +170,12 @@ class ShoppingCart(models.Model):
         return f"{self.user} добавил {self.recipe} в список покупок"
 
     class Meta:
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
-                fields=["user", "recipe"], name="unique_shopping_cart"
-            )
-        ]
+                fields=("user", "recipe"), name="unique_shopping_cart"
+            ),
+        )
+
+    class Meta:
+        verbose_name = "Лист покупок"
+        verbose_name_plural = verbose_name
