@@ -1,20 +1,56 @@
+from djoser.serializers import UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.validators import UniqueValidator
 
-from foodgram.models import (
-    Favorite,
-    Ingredients,
-    Recipe,
-    RecipeIngredients,
-    RecipeTag,
-    ShoppingCart,
-    Tag,
-)
-from django.contrib.auth import get_user_model
+from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
+                             RecipeTag, ShoppingCart, Tag)
+from users.models import Follow, User
 
-User = get_user_model()
+
+class CustomUserSerializer(UserSerializer):
+    """Сериализатор пользователя"""
+
+    is_subscribed = SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ("email", "id", "username", "first_name", "last_name", "is_subscribed")
+
+    def get_is_subscribed(self, following):
+        user = self.context.get("request").user
+        return Follow.objects.filter(user=user, following=following).exists()
+
+
+class FollowSerializer(UserSerializer):
+    """Сериализатор подписок"""
+
+    recipes = SerializerMethodField()
+    recipes_count = SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            "email",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "is_subscribed",
+            "recipes",
+            "recipes_count",
+        )
+
+    def get_is_subscribed(self, following):
+        user = self.context.get("request").user
+        return Follow.objects.filter(user=user, following=following).exists()
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
+
+    def get_recipes(self, obj):
+        return obj.recipes.all()
 
 
 class TagSerializer(serializers.ModelSerializer):
