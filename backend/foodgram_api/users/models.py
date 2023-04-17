@@ -21,12 +21,12 @@ class User(AbstractUser):
         verbose_name="Подписка", default=False, blank=True, null=True
     )
 
-    def __str__(self):
-        return self.username
-
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+
+    def __str__(self):
+        return self.username
 
 
 class Follow(models.Model):
@@ -42,9 +42,6 @@ class Follow(models.Model):
         User, on_delete=models.CASCADE, related_name="following", verbose_name="Блогер"
     )
 
-    def __str__(self):
-        return f"{self.user} подписан на {self.following}"
-
     class Meta:
         constraints = (
             models.UniqueConstraint(fields=("user", "following"), name="unique_follow"),
@@ -55,3 +52,6 @@ class Follow(models.Model):
         )
         verbose_name = "Подписки"
         verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return f"{self.user} подписан на {self.following}"

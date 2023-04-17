@@ -90,15 +90,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         if request.method == "POST":
             return self.add_favorite(request, pk)
-        else:
-            return self.delete_favorite(request, pk)
+
+        return self.delete_favorite(request, pk)
 
     @action(methods=("POST", "DELETE"), detail=True, permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk):
         if request.method == "POST":
             return self.add_in_shopping_cart(request, pk)
-        else:
-            return self.delete_from_shopping_cart(request, pk)
+
+        return self.delete_from_shopping_cart(request, pk)
 
     @action(methods=("GET",), detail=False, permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request):
