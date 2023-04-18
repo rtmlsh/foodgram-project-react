@@ -175,18 +175,3 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
         self.add_ingredients(ingredients, tags, instance)
         recipe = super().update(instance, validated_data)
         return recipe
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор данных юзера"""
-
-    class Meta:
-        fields = (
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-            "bio",
-            "role",
-        )
-        model = User

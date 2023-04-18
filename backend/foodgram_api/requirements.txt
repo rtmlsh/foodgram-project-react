@@ -2,11 +2,13 @@ asgiref
 django
 django-filter
 djangorestframework
+djoser
 djangorestframework-simplejwt
 drf-yasg
 gunicorn
 psycopg2-binary
 PyJWT
+Pillow
 pytest
 pytest-django
 pytest-pythonpath

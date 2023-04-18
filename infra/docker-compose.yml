@@ -4,7 +4,7 @@ services:
     image: postgres:13.0-alpine
     restart: always
     volumes:
-      - /var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env
   web:
@@ -13,8 +13,8 @@ services:
       dockerfile: Dockerfile
     restart: always
     volumes:
-      - /app/static/
-      - /app/media/
+      - static_value:/app/static/
+      - media_value:/app/media/
     ports:
       - "8000:8000"
     depends_on:
@@ -37,3 +37,11 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
       - /var/html/static/
       - /var/html/media/
+    depends_on:
+      - web
+    restart: always
+
+volumes:
+  static_value:
+  media_value:
+  postgres_data:
