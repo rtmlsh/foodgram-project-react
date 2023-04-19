@@ -1,4 +1,4 @@
-from djoser.serializers import UserSerializer
+from djoser.serializers import UserSerializer, UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
@@ -7,6 +7,12 @@ from rest_framework.validators import UniqueValidator
 from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
                              RecipeTag, ShoppingCart, Tag)
 from users.models import Follow, User
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    class Meta:
+        model = User
+        fields = ("email", "username", "first_name", "last_name", "password")
 
 
 class CustomUserSerializer(UserSerializer):
