@@ -185,6 +185,11 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
         recipe = super().update(instance, validated_data)
         return recipe
 
+    def to_representation(self, instance):
+        request = self.context.get("request")
+        context = {"request": request}
+        return RecipeSerializer(instance, context=context).data
+
 
 class RecipeResponseSerializer(serializers.ModelSerializer):
     """Сериализатор рецептов для ответов API"""
