@@ -3,13 +3,15 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.validators import UniqueValidator
-
+from drf_extra_fields.fields import Base64ImageField
 from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
                              RecipeTag, ShoppingCart, Tag)
 from users.models import Follow, User
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
+    """Сериализатор для создания пользователя"""
+
     class Meta:
         model = User
         fields = ("email", "username", "first_name", "last_name", "password")
@@ -133,10 +135,11 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
     ingredients = AddIngredientsSerializer(many=True)
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
-        fields = ("author", "ingredients", "tags", "name", "text", "cooking_time")
+        fields = ("author", "ingredients", "tags", "name", "text", "cooking_time", "image")
 
     def validate_tags(self, value):
         if not value:
@@ -181,3 +184,17 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
         self.add_ingredients(ingredients, tags, instance)
         recipe = super().update(instance, validated_data)
         return recipe
+
+
+class RecipeResponseSerializer(serializers.ModelSerializer):
+    """Сериализатор рецептов для ответов API"""
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            "id",
+            "name",
+            "image",
+            "cooking_time"
+        )

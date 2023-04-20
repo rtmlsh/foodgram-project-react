@@ -12,7 +12,7 @@ from foodgram.models import (Favorite, Ingredients, Recipe, RecipeIngredients,
 from .filters import RecipeFilter
 from .pagination import CustomPagination
 from .serializers import (CreateUpdateRecipeSerializer, IngredientsSerializer,
-                          RecipeSerializer, TagSerializer)
+                          RecipeSerializer, TagSerializer, RecipeResponseSerializer)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -47,9 +47,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         recipe = Recipe.objects.get(id=pk)
         Favorite.objects.get_or_create(user=request.user, recipe=recipe)
-        return Response(
-            {"alert": "Рецепт добавлен в избранное"}, status=status.HTTP_201_CREATED
-        )
+        serializer = RecipeResponseSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def delete_favorite(request, pk):

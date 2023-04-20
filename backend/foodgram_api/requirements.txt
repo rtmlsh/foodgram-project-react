@@ -16,3 +16,4 @@ pytz
 python-dotenv
 sqlparse
 requests
+django-extra-fields
