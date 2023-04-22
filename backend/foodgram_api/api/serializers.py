@@ -80,10 +80,7 @@ class IngredientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор рецептов для чтения"""
 
-    author = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="username"
-    )
+    author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientsSerializer(many=True, read_only=True)
     is_favorited = SerializerMethodField()
