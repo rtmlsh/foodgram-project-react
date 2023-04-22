@@ -82,7 +82,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         read_only=True,
-        slug_field="username",
+        slug_field="username"
     )
     tags = TagSerializer(many=True, read_only=True)
     ingredients = IngredientsSerializer(many=True, read_only=True)
@@ -92,6 +92,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
+            "id",
             "author",
             "ingredients",
             "tags",
@@ -139,7 +140,7 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ("author", "ingredients", "tags", "name", "text", "cooking_time", "image")
+        fields = ("id", "author", "ingredients", "tags", "name", "text", "cooking_time", "image")
 
     def validate_tags(self, value):
         if not value:

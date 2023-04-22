@@ -70,10 +70,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         recipe = Recipe.objects.get(id=pk)
         ShoppingCart.objects.get_or_create(user=request.user, recipe=recipe)
-        return Response(
-            {"alert": "Рецепт добавлен в список покупок"},
-            status=status.HTTP_201_CREATED,
-        )
+        serializer = RecipeResponseSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def delete_from_shopping_cart(request, pk):
@@ -99,7 +97,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return self.delete_from_shopping_cart(request, pk)
 
-    @action(methods=("GET",), detail=False, permission_classes=(IsAuthenticated,))
+    @action(detail=False, permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request):
         ingredients = (
             RecipeIngredients.objects.filter(
