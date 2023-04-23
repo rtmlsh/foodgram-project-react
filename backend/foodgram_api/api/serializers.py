@@ -101,17 +101,17 @@ class RecipeSerializer(serializers.ModelSerializer):
             "is_in_shopping_cart",
         )
 
-    def get_is_favorited(self, recipe):
+    def get_is_favorited(self, obj):
         user = self.context.get("request").user
-        return Favorite.objects.filter(
-            user=user.is_authenticated, recipe=recipe
-        ).exists()
+        if user.is_anonymous:
+            return False
+        return user.favorite.filter(recipe=obj).exists()
 
-    def get_is_in_shopping_cart(self, recipe):
+    def get_is_in_shopping_cart(self, obj):
         user = self.context.get("request").user
-        return ShoppingCart.objects.filter(
-            user=user.is_authenticated, recipe=recipe
-        ).exists()
+        if user.is_anonymous:
+            return False
+        return user.shopping_cart.filter(recipe=obj).exists()
 
 
 class AddIngredientsSerializer(serializers.ModelSerializer):
@@ -142,12 +142,14 @@ class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
     def validate_tags(self, value):
         if not value:
             raise ValidationError({"error": "Для создания рецепта нужно выбрать теги"})
+        return value
 
     def validate_ingredients(self, value):
         if not value:
             raise ValidationError(
                 {"error": "Для создания рецепта нужно выбрать ингредиенты"}
             )
+        return value
 
     def add_tags(self, recipe, tags):
         for tag in tags:
