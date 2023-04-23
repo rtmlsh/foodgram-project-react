@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
@@ -10,11 +11,15 @@ from api.pagination import CustomPagination
 from .models import Follow, User
 from api.serializers import CustomUserSerializer, FollowSerializer
 
+from api.filters import RecipeFilter
+
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all().order_by("id")
     serializer_class = CustomUserSerializer
     pagination_class = CustomPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     @staticmethod
     def add_subscriber(request, author, subscribe):
@@ -48,9 +53,10 @@ class CustomUserViewSet(UserViewSet):
         else:
             return self.delete_subscriber(subscribe)
 
-    @action(detail=False, permission_classes=[IsAuthenticated])
+    @action(detail=False, permission_classes=(IsAuthenticated,))
     def subscriptions(self, request):
         user = request.user
         queryset = User.objects.filter(following__user=user)
-        serializer = FollowSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        page = self.paginate_queryset(queryset)
+        serializer = FollowSerializer(page, many=True, context={"request": request})
+        return self.get_paginated_response(serializer.data)
