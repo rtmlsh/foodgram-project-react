@@ -4,7 +4,6 @@ from foodgram.models import Recipe, Tag, User
 
 
 class RecipeFilter(rest_framework.FilterSet):
-    # tags = filters.AllValuesFilter(field_name='tags__slug')
     tags = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
         field_name="tags__slug",
