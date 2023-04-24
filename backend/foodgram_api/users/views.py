@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
@@ -11,15 +10,11 @@ from api.pagination import CustomPagination
 from .models import Follow, User
 from api.serializers import CustomUserSerializer, FollowSerializer
 
-from api.filters import RecipeFilter
-
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all().order_by("id")
     serializer_class = CustomUserSerializer
     pagination_class = CustomPagination
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = RecipeFilter
 
     @staticmethod
     def add_subscriber(request, author, subscribe):
@@ -28,7 +23,7 @@ class CustomUserViewSet(UserViewSet):
                 {"errors": "Автор уже добавлен в подписки"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        Follow.objects.get_or_create(user=request.user, following=author)
+        Follow.objects.create(user=request.user, following=author)
         return Response(
             {"alert": "Автор добавлен в подписки"}, status=status.HTTP_201_CREATED
         )
