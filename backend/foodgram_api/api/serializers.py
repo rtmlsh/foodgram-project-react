@@ -58,7 +58,8 @@ class FollowSerializer(UserSerializer):
         return obj.recipes.count()
 
     def get_recipes(self, obj):
-        return obj.recipes.all()
+        serializer = RecipeResponseSerializer(obj.recipes.all(), many=True, read_only=True)
+        return serializer.data
 
 
 class TagSerializer(serializers.ModelSerializer):
