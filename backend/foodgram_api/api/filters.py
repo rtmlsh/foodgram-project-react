@@ -1,17 +1,18 @@
-from django_filters import rest_framework, filters, BooleanFilter
+from django_filters import rest_framework, filters
 
 from foodgram.models import Recipe, Tag, User
 
 
 class RecipeFilter(rest_framework.FilterSet):
+    # tags = filters.AllValuesFilter(field_name='tags__slug')
     tags = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
         field_name="tags__slug",
         to_field_name="slug"
     )
     author = filters.NumberFilter(field_name='author__id')
-    is_favorited = NumberFilter(method="get_favorite_filter")
-    is_in_shopping_cart = NumberFilter(method="get_shopping_cart_filter")
+    is_favorited = filters.NumberFilter(method="get_favorite_filter")
+    is_in_shopping_cart = filters.NumberFilter(method="get_shopping_cart_filter")
 
     class Meta:
         model = Recipe
