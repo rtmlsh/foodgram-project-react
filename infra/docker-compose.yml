@@ -8,9 +8,6 @@ services:
     env_file:
       - ./.env
   web:
-#    build:
-#      context: ../backend/foodgram_api/
-#      dockerfile: Dockerfile
     image: rtmlsh/foodgram:latest
     restart: always
     volumes:
@@ -23,9 +20,6 @@ services:
     env_file:
       - ./.env
   frontend:
-#    build:
-#      context: ../frontend
-#      dockerfile: Dockerfile
     image: rtmlsh/foodgram:latest
     volumes:
       - ../frontend/:/app/result_build/
