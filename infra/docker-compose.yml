@@ -5,8 +5,6 @@ services:
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - ./.env
   web:
     image: rtmlsh/foodgram:latest
     restart: always
@@ -17,8 +15,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    env_file:
-      - ./.env
   frontend:
     image: rtmlsh/foodgram:latest
     volumes:
