@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ux38skj)$mmr*g+pw!!amz7&%6uqlp3j44^k=oq4xt-!p(095c'
+SECRET_KEY = os.getenv('SECRET_KEY', default='12345')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -72,12 +72,12 @@ WSGI_APPLICATION = 'foodgram_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': '5432'
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default='postgres'),
+        'USER': os.getenv('POSTGRES_USER', default='postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+        'HOST': os.getenv('DB_HOST', default='db'),
+        'PORT': os.getenv('DB_PORT', default=5432)
     }
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
