@@ -16,7 +16,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='12345')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*", "158.160.20.235", "web:8000"]
+ALLOWED_HOSTS = ["*", "158.160.20.235", "web:8000",]
 
 # Application definition
 
