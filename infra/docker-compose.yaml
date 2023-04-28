@@ -8,11 +8,7 @@ services:
     env_file:
       - ./.env
   web:
-#    platform: linux/x86_64
-#    image: rtmlsh/foodgram:latest
-    build:
-      context: ../backend/foodgram_api/
-      dockerfile: Dockerfile
+    image: rtmlsh/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -24,10 +20,7 @@ services:
     env_file:
       - ./.env
   frontend:
-    build:
-      context: ../frontend/
-      dockerfile: Dockerfile
-#    image: rtmlsh/foodgram:latest
+    image: rtmlsh/foodgram:latest
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
