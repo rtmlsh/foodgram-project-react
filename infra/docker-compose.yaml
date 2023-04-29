@@ -20,8 +20,7 @@ services:
     env_file:
       - ./.env
   frontend:
-    build:
-      dockerfile: ../frontend/Dockerfile
+    image: rtmlsh/foodgram:latest
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
