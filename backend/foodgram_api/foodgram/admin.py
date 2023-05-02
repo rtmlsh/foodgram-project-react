@@ -6,7 +6,7 @@ from .models import (Favorite, Ingredients, Recipe, RecipeIngredients,
                      RecipeTag, ShoppingCart, Tag)
 
 
-class IngredientsInline(admin.TabularInline):
+class IngredientsInline(admin.StackedInline):
     model = Ingredients
 
 
