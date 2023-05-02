@@ -9,6 +9,7 @@ services:
       - ./.env
   web:
     image: rtmlsh/foodgram:latest
+    platform: linux/x86_64
     restart: always
     volumes:
       - static_value:/app/static/
@@ -21,6 +22,7 @@ services:
       - ./.env
   frontend:
     image: rtmlsh/foodgram:latest
+    platform: linux/x86_64
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
