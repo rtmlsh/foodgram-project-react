@@ -6,6 +6,10 @@ from .models import (Favorite, Ingredients, Recipe, RecipeIngredients,
                      RecipeTag, ShoppingCart, Tag)
 
 
+class IngredientsInline(admin.TabularInline):
+    model = Ingredients
+
+
 @admin.register(Ingredients)
 class IngredientsAdmin(admin.ModelAdmin):
     list_display = ("name", "measurement_unit")
@@ -16,6 +20,7 @@ class IngredientsAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ("name", "author", "count_favorites")
     search_fields = ("name", "author", "tags")
+    inlines = [IngredientsInline]
 
     def count_favorites(self, obj):
         return obj.favorite_recipes.count()
