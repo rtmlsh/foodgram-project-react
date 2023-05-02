@@ -12,10 +12,17 @@ class IngredientsAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
+class IngredientsInline(admin.TabularInline):
+    model = Ingredients
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ("name", "author", "count_favorites")
     search_fields = ("name", "author", "tags")
+    inlines = [
+        IngredientsInline,
+    ]
 
     def count_favorites(self, obj):
         return obj.favorite_recipes.count()
